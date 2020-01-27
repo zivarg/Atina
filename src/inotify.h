@@ -44,6 +44,8 @@ protected:
 
   static epoll_event collectEpollEvent(const int &aEpollFd, const int &aFd);
 
+//  static bool initStopPipeFd(int *aStopPipeFd, int aPipeSize);
+
   //  void removeWatch(int aWd, bool aIsRemoveFromCollection = true);
   //
   //  std::string wdToPathName(int aWd);
@@ -51,11 +53,20 @@ protected:
   //  int pathNameToWd(const std::string &aPathName);
 
 protected:
+
   int mFd{-1};
 
   int mEpollFd{-1};
 
   epoll_event mEpollEvent;
+
+  int mStopPipeFd[2];
+
+  epoll_event mStopPipeEpollEvent;
+
+  const int mPipeReadIdx {0};
+
+  const int mPipeWriteIdx {1};
   //
   //  std::unordered_map<int, std::string> mWds;
 };

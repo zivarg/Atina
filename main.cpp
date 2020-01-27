@@ -1,5 +1,7 @@
 #include <iostream>
 
+#include <assert.h>
+
 #include "src/inotify.h"
 
 int main() {

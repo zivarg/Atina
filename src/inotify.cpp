@@ -259,6 +259,9 @@ epoll_event Inotify::collectEpollEvent(const int &aEpollFd, const int &aFd) {
 
   return epollEvent;
 }
+
+//bool Inotify::initStopPipeFd(int aStopPipeFd[2])
+//{}
 //
 // void Inotify::removeWatch(int wd, bool isRemoveFromCollection) {
 //  //  if (!validateFd()) {
