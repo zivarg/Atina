@@ -1,0 +1,27 @@
+<?xml version = "1.0" encoding = "utf-8"?>
+<Table name="param_text" valuetype="data" type = "text/xml" timestamp ="2018-04-30 20:10:02.047" >
+	<param_text>
+        <name>Алексеев Иван Петрович</name>
+        <date>1976-01-01</date>
+        <hours-worked>25</hours-worked>
+        <car-true>YES</car-true>
+    </param_text>
+	<param_text>
+		<name>Петров Сергей Иванович</name>
+		<date>1996-01-01</date>
+		<hours-worked>8</hours-worked>
+		<car-true>YES</car-true>
+	</param_text>
+	<param_text>
+		<name>Колесниченко Иван Сергеевич</name>
+		<date>2002-11-01</date>
+		<hours-worked>8</hours-worked>
+		<car-true>YES</car-true>
+	</param_text>
+	<param_text>
+		<name>Осипов Алексей Иванович</name>
+		<date>2002-11-21</date>
+		<hours-worked>16</hours-worked>
+		<car-true>YES</car-true>
+	</param_text>
+</Table>
