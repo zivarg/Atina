@@ -1,12 +1,11 @@
-#ifndef INOTIFY_H
-#define INOTIFY_H
+#ifndef ATINA_INOTIFY_H
+#define ATINA_INOTIFY_H
+
+#include "atinafd.h"
 
 #include <sys/epoll.h>
-//
-//#include <string>
-//
-//#include <bits/unordered_set.h>
-//#include <unordered_map>
+
+namespace Atina {
 
 class Inotify {
 public:
@@ -14,9 +13,9 @@ public:
 
   ~Inotify();
 
-  bool init();
+  bool open();
 
-  void deinit();
+  void close();
   //
   //  bool addWatch(const std::string &aPathName, std::uint32_t aEventMask);
   //
@@ -25,17 +24,9 @@ public:
   //  void removeAllWatches();
 
 protected:
-  static bool initFd(int &aFd);
+  static bool initFd(Fd &aFd);
 
-  static bool validateFd(const int &aFd, bool aIsDisplayError = true);
-
-  static void closeFd(int &aFd);
-
-  static bool initEpollFd(int &aEpollFd);
-
-  static bool validateEpollFd(const int &aEpollFd, bool aIsDisplayError = true);
-
-  static void closeEpollFd(int &aEpollFd);
+  static bool initEpollFd(Fd &aEpollFd);
 
   static bool addEpollCtl(const int &aEpollFd, const int &aFd,
                           epoll_event &epollEvent);
@@ -44,7 +35,9 @@ protected:
 
   static epoll_event collectEpollEvent(const int &aEpollFd, const int &aFd);
 
-//  static bool initStopPipeFd(int *aStopPipeFd, int aPipeSize);
+  static bool initPipeFd(int *aPipeFd, int aPipeFdSize);
+
+  static bool closePipeFd(int *aPipeFd, int aPipeFdSize);
 
   //  void removeWatch(int aWd, bool aIsRemoveFromCollection = true);
   //
@@ -53,22 +46,23 @@ protected:
   //  int pathNameToWd(const std::string &aPathName);
 
 protected:
+  Fd mFd{"Inotify file descriptor"};
 
-  int mFd{-1};
-
-  int mEpollFd{-1};
+  Fd mEpollFd{"Epoll file descriptor"};
 
   epoll_event mEpollEvent;
 
-  int mStopPipeFd[2];
+  int mStopPipeFd[2]{-1, -1};
 
   epoll_event mStopPipeEpollEvent;
 
-  const int mPipeReadIdx {0};
+  const int mPipeReadIdx{0};
 
-  const int mPipeWriteIdx {1};
+  const int mPipeWriteIdx{1};
   //
   //  std::unordered_map<int, std::string> mWds;
 };
 
-#endif // INOTIFY_H
+} // namespace Atina
+
+#endif // ATINA_INOTIFY_H

@@ -1,4 +1,6 @@
-#include "inotify.h"
+#include "atinainotify.h"
+
+#include <fcntl.h>
 
 #include <unistd.h>
 
@@ -6,21 +8,23 @@
 
 #include <sys/inotify.h>
 
-#include "valueinitializer.h"
+#include "atinavalueinitializer.h"
+
+namespace Atina {
 
 Inotify::Inotify() {}
 
-Inotify::~Inotify() { deinit(); }
+Inotify::~Inotify() { close(); }
 
-bool Inotify::init() {
+bool Inotify::open() {
 
   if (mFd == -1) {
-    deinit();
+    close();
   }
 
-  ValueInitializer<int> fdInitializer{{false, -1},
-      [](int &aValue) { closeFd(aValue); },
-      [](int &aValue) { return initFd(aValue); }};
+  ValueInitializer<Fd> fdInitializer{{false, mFd.name()},
+                                     [](Fd &aValue) { Fd::close(aValue); },
+                                     [](Fd &aValue) { return initFd(aValue); }};
 
   if (!fdInitializer.isOk()) {
     return false;
@@ -28,9 +32,10 @@ bool Inotify::init() {
 
   auto fd{fdInitializer.value()};
 
-  ValueInitializer<int> epollFdInitializer{{false, -1},
-      [](int &aValue) { closeEpollFd(aValue); },
-      [](int &aValue) { return initEpollFd(aValue); }};
+  ValueInitializer<Fd> epollFdInitializer{
+      {false, mEpollFd.name()},
+      [](Fd &aValue) { Fd::close(aValue); },
+      [](Fd &aValue) { return initEpollFd(aValue); }};
 
   if (!epollFdInitializer.isOk()) {
     return false;
@@ -91,7 +96,7 @@ bool Inotify::init() {
 //  return true;
 //}
 //
-void Inotify::deinit() {
+void Inotify::close() {
   if (mFd == -1) {
     return;
   }
@@ -149,80 +154,30 @@ void Inotify::deinit() {
 //  mWds.clear();
 //}
 //
-bool Inotify::initFd(int &aFd) {
+bool Inotify::initFd(Fd &aFd) {
   if (aFd != -1) {
-    closeFd(aFd);
+    Fd::close(aFd);
   }
 
-  aFd = inotify_init1(IN_NONBLOCK);
-
-  if (aFd == -1) {
-    fprintf(stderr, "Inotify file descriptor cannot be initialized.");
+  if ((aFd = inotify_init1(IN_NONBLOCK)) == -1) {
+    fprintf(stderr, "%s cannot be initialized.", aFd.name().c_str());
     return false;
   }
 
   return true;
 }
 
-bool Inotify::validateFd(const int &aFd, bool aIsDisplayError) {
-  if (aFd == -1) {
-    if (aIsDisplayError) {
-      fprintf(stderr, "Inotify file descriptor is not initialized.");
-    }
-    return false;
-  }
-
-  return true;
-}
-
-void Inotify::closeFd(int &aFd) {
-  if (aFd == -1) {
-    return;
-  }
-
-  if (close(aFd) != 0) {
-    fprintf(stderr, "Inotify file descriptor cannot be normally closed.");
-  }
-
-  aFd = -1;
-}
-
-bool Inotify::initEpollFd(int &aEpollFd) {
+bool Inotify::initEpollFd(Fd &aEpollFd) {
   if (aEpollFd != -1) {
-    closeEpollFd(aEpollFd);
+    Fd::close(aEpollFd);
   }
 
-  aEpollFd = epoll_create1(0);
-
-  if (aEpollFd == -1) {
-    fprintf(stderr, "Epoll file descriptor cannot be created.");
+  if ((aEpollFd = epoll_create1(0)) == -1) {
+    fprintf(stderr, "$s cannot be created.", aEpollFd.name().c_str());
     return false;
   }
 
   return true;
-}
-
-bool Inotify::validateEpollFd(const int &aEpollFd, bool aIsDisplayError) {
-  if (aEpollFd == -1) {
-    if (aIsDisplayError) {
-      fprintf(stderr, "Epoll file descriptor is not initialized.");
-    }
-    return false;
-  }
-
-  return true;
-}
-
-void Inotify::closeEpollFd(int &aEpollFd) {
-  if (aEpollFd == -1) {
-    return;
-  }
-
-  if (close(aEpollFd) != 0) {
-    fprintf(stderr, "Epoll file descriptor cannot be normally closed.");
-  }
-
-  aEpollFd = -1;
 }
 
 bool Inotify::addEpollCtl(const int &aEpollFd, const int &aFd,
@@ -260,7 +215,15 @@ epoll_event Inotify::collectEpollEvent(const int &aEpollFd, const int &aFd) {
   return epollEvent;
 }
 
-//bool Inotify::initStopPipeFd(int aStopPipeFd[2])
+bool Inotify::initPipeFd(int *aPipeFd, int aPipeFdSize) {
+  if (pipe2(aPipeFd, O_NONBLOCK) == -1) {
+    fprintf(stderr, "Pipe file descriptor cannot be created.");
+  }
+}
+
+bool Inotify::closePipeFd(int *aPipeFd, int aPipeFdSize) {}
+
+// bool Inotify::initStopPipeFd(int aStopPipeFd[2])
 //{}
 //
 // void Inotify::removeWatch(int wd, bool isRemoveFromCollection) {
@@ -305,3 +268,5 @@ epoll_event Inotify::collectEpollEvent(const int &aEpollFd, const int &aFd) {
 //
 //  return -1;
 //}
+
+} // namespace Atina

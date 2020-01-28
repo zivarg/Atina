@@ -1,9 +1,11 @@
-#ifndef VALUEINITIALIZER_H
-#define VALUEINITIALIZER_H
+#ifndef ATINA_VALUEINITIALIZER_H
+#define ATINA_VALUEINITIALIZER_H
 
 #include <functional>
 
 #include <utility>
+
+namespace Atina {
 
 template <typename Type> class ValueInitializer {
   typedef std::function<bool(Type &)> Handler;
@@ -65,4 +67,6 @@ private:
   bool mIsValueTaken;
 };
 
-#endif // VALUEINITIALIZER_H
+}
+
+#endif // ATINA_VALUEINITIALIZER_H

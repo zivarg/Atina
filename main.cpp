@@ -1,13 +1,11 @@
 #include <iostream>
 
-#include <assert.h>
-
-#include "src/inotify.h"
+#include "src/atinainotify.h"
 
 int main() {
-  Inotify inotify;
+  Atina::Inotify inotify;
 
-  inotify.init();
+  inotify.open();
 
     std::cout << "Hello, World!" << std::endl;
     return 0;
