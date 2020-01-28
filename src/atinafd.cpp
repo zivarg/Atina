@@ -13,8 +13,6 @@ Fd::Fd(int aValue) : mName{defaultName()}, mValue{aValue} {}
 Fd::Fd(std::string aName, int aValue)
     : mName{std::move(aName)}, mValue{aValue} {};
 
-Fd::Fd(const Fd &aOther) : mName{aOther.mName}, mValue{aOther.mValue} {}
-
 Fd &Fd::operator=(const Fd &aOther) {
   if (&aOther == this) {
     return *this;
@@ -37,6 +35,26 @@ Fd &Fd::operator=(int aValue) {
   mValue = aValue;
 
   return *this;
+}
+
+bool Fd::operator==(const Fd &aOther) const
+{
+  return aOther.mValue == mValue;
+}
+
+bool Fd::operator!=(const Fd &aOther) const
+{
+  return !operator==(aOther);
+}
+
+bool Fd::operator==(int aValue) const
+{
+  return aValue == mValue;
+}
+
+bool Fd::operator!=(int aValue) const
+{
+  return !operator==(aValue);
 }
 
 bool Fd::validate(const int &aValue, const char *aName, bool aIsDisplayError) {
@@ -69,6 +87,11 @@ void Fd::close(int &aValue, const char *aName) {
   }
 
   aValue = invalid();
+}
+
+void Fd::close(int &aValue, const std::string &aName)
+{
+  close(aValue, aName.c_str());
 }
 
 void Fd::close(Fd &aValue) { close(aValue.mValue, aValue.mName.c_str()); }

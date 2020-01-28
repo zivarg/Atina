@@ -7,11 +7,11 @@ namespace Atina {
 
 class Fd {
 public:
-  Fd(int aValue = invalid());
+  explicit Fd(int aValue = invalid());
 
-  Fd(std::string aName, int aValue = invalid());
+  explicit Fd(std::string aName, int aValue = invalid());
 
-  Fd(const Fd &aOther);
+  Fd(const Fd &aOther) = default;
 
   Fd &operator=(const Fd &aOther);
 
@@ -20,6 +20,14 @@ public:
   explicit operator int() const;
 
   Fd &operator=(int aValue);
+
+  bool operator==(const Fd &aOther) const;
+
+  bool operator!=(const Fd &aOther) const;
+
+  bool operator==(int aValue) const;
+
+  bool operator!=(int aValue) const;
 
   static constexpr const char *defaultName() { return "File descriptor"; }
 

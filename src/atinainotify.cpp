@@ -215,9 +215,9 @@ epoll_event Inotify::collectEpollEvent(const int &aEpollFd, const int &aFd) {
   return epollEvent;
 }
 
-bool Inotify::initPipeFd(int *aPipeFd, int aPipeFdSize) {
-  if (pipe2(aPipeFd, O_NONBLOCK) == -1) {
-    fprintf(stderr, "Pipe file descriptor cannot be created.");
+bool Inotify::initPipeFd(PipeFd &aPipeFd) {
+  if (pipe2(aPipeFd.data(), O_NONBLOCK) == -1) {
+    fprintf(stderr, "%s cannot be created.", aPipeFd.name().c_str());
   }
 }
 

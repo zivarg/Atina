@@ -11,11 +11,11 @@ namespace Atina {
 
 class PipeFd {
 public:
-  PipeFd(int aValue = invalid());
+  explicit PipeFd(const std::array<int, ATINA_PIPE_FD_SIZE> &aValue = invalid());
 
-  PipeFd(std::string aName, int aValue = invalid());
+  explicit PipeFd(std::string aName, const std::array<int, ATINA_PIPE_FD_SIZE> &aValue = invalid());
 
-  PipeFd(const PipeFd &aOther);
+  PipeFd(const PipeFd &aOther) = default;
 
   PipeFd &operator=(const PipeFd &aOther);
 
@@ -24,6 +24,14 @@ public:
   explicit operator std::array<int, ATINA_PIPE_FD_SIZE>() const;
 
   PipeFd &operator=(const std::array<int, ATINA_PIPE_FD_SIZE> &aValue);
+
+  bool operator==(const PipeFd &aOther) const;
+
+  bool operator!=(const PipeFd &aOther) const;
+
+  bool operator==(const std::array<int, ATINA_PIPE_FD_SIZE> &aValue) const;
+
+  bool operator!=(const std::array<int, ATINA_PIPE_FD_SIZE> &aValue) const;
 
   static constexpr const char *defaultName() { return "Pipe file descriptor"; }
 
@@ -51,7 +59,7 @@ public:
   static void close(std::array<int, ATINA_PIPE_FD_SIZE> &aValue,
                     const std::string &aName = defaultName());
 
-  static void close(PipeFd &aFd);
+  static void close(PipeFd &aPipeFd);
 
   const std::string &name() const;
 

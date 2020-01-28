@@ -4,13 +4,12 @@
 
 namespace Atina {
 
-PipeFd::PipeFd(int aValue) : mName{defaultName()}, mValue{aValue} {}
+PipeFd::PipeFd(const std::array<int, ATINA_PIPE_FD_SIZE> &aValue)
+    : mName{defaultName()}, mValue{aValue} {}
 
-PipeFd::PipeFd(std::string aName, int aValue)
+PipeFd::PipeFd(std::string aName,
+               const std::array<int, ATINA_PIPE_FD_SIZE> &aValue)
     : mName{std::move(aName)}, mValue{aValue} {};
-
-PipeFd::PipeFd(const PipeFd &aOther)
-    : mName{aOther.mName}, mValue{aOther.mValue} {}
 
 PipeFd &PipeFd::operator=(const PipeFd &aOther) {
   if (&aOther == this) {
@@ -34,6 +33,24 @@ PipeFd &PipeFd::operator=(const std::array<int, ATINA_PIPE_FD_SIZE> &aValue) {
   mValue = aValue;
 
   return *this;
+}
+
+bool PipeFd::operator==(const PipeFd &aOther) const {
+  return aOther.mValue == mValue;
+}
+
+bool PipeFd::operator!=(const PipeFd &aOther) const {
+  return !operator==(aOther);
+}
+
+bool PipeFd::operator==(
+    const std::array<int, ATINA_PIPE_FD_SIZE> &aValue) const {
+  return aValue == mValue;
+}
+
+bool PipeFd::operator!=(
+    const std::array<int, ATINA_PIPE_FD_SIZE> &aValue) const {
+  return !operator==(aValue);
 }
 
 bool PipeFd::validate(const std::array<int, ATINA_PIPE_FD_SIZE> &aValue,
@@ -65,7 +82,8 @@ int PipeFd::isValid(const std::array<int, ATINA_PIPE_FD_SIZE> &aValue) {
 
 void PipeFd::close(std::array<int, ATINA_PIPE_FD_SIZE> &aValue,
                    const char *aName) {
-  if (::close(aValue) != 0) {
+  if (::close(aValue[readChannelIndex()]) != 0 ||
+      ::close(aValue[writeChannelIndex()]) != 0) {
     fprintf(stderr, "%s cannot be normally closed.", aName);
   }
 
@@ -79,12 +97,12 @@ void PipeFd::close(std::array<int, ATINA_PIPE_FD_SIZE> &aValue,
 
 void PipeFd::close(PipeFd &aPipeFd) { close(aPipeFd.mValue, aPipeFd.mName); }
 
-const std::string &Fd::name() const { return mName; }
+const std::string &PipeFd::name() const { return mName; }
 
-const int *data() const;
+const int *PipeFd::data() const { return mValue.data(); }
 
-int *data();
+int *PipeFd::data() { return mValue.data(); }
 
-bool Fd::isValid() const { return isValid(mValue); }
+bool PipeFd::isValid() const { return isValid(mValue); }
 
 } // namespace Atina

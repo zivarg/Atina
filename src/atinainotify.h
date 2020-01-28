@@ -3,6 +3,8 @@
 
 #include "atinafd.h"
 
+#include "atinapipefd.h"
+
 #include <sys/epoll.h>
 
 namespace Atina {
@@ -29,15 +31,13 @@ protected:
   static bool initEpollFd(Fd &aEpollFd);
 
   static bool addEpollCtl(const int &aEpollFd, const int &aFd,
-                          epoll_event &epollEvent);
+                          epoll_event &aEpollEvent);
 
   static void delEpollCtl(const int &aEpollFd, const int &aFd);
 
   static epoll_event collectEpollEvent(const int &aEpollFd, const int &aFd);
 
-  static bool initPipeFd(int *aPipeFd, int aPipeFdSize);
-
-  static bool closePipeFd(int *aPipeFd, int aPipeFdSize);
+  static bool initPipeFd(PipeFd &aPipeFd);
 
   //  void removeWatch(int aWd, bool aIsRemoveFromCollection = true);
   //
@@ -52,13 +52,9 @@ protected:
 
   epoll_event mEpollEvent;
 
-  int mStopPipeFd[2]{-1, -1};
+  PipeFd mStopPipeFd{"Stop pipe file descriptor"};
 
   epoll_event mStopPipeEpollEvent;
-
-  const int mPipeReadIdx{0};
-
-  const int mPipeWriteIdx{1};
   //
   //  std::unordered_map<int, std::string> mWds;
 };
