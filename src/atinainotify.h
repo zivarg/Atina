@@ -30,14 +30,14 @@ protected:
 
   static bool initEpollFd(Fd &aEpollFd);
 
-  static bool addEpollCtl(const int &aEpollFd, const int &aFd,
-                          epoll_event &aEpollEvent);
-
-  static void delEpollCtl(const int &aEpollFd, const int &aFd);
-
-  static epoll_event collectEpollEvent(const int &aEpollFd, const int &aFd);
-
   static bool initPipeFd(PipeFd &aPipeFd);
+
+//  static bool addEpollCtl(const int &aEpollFd, const int &aFd,
+//                          epoll_event &aEpollEvent);
+//
+//  static void delEpollCtl(const int &aEpollFd, const int &aFd);
+
+//  static epoll_event collectEpollEvent(const int &aEpollFd, const int &aFd);
 
   //  void removeWatch(int aWd, bool aIsRemoveFromCollection = true);
   //

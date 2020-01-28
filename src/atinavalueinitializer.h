@@ -64,7 +64,7 @@ private:
 
   std::pair<bool, Type> mValue;
 
-  bool mIsValueTaken;
+  bool mIsValueTaken{};
 };
 
 }
